@@ -1,0 +1,24 @@
+﻿Build started 11/13/2015 7:47:10 PM.
+     1>Project "C:\Users\Marie\Documents\GitHub\KeyframeProject\KeyframeProject\vc2013\KeyframeProject.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\include /I..\..\..\..\..\..\..\MyPrograms\cinder_0.9.0_vc2013\cinder_0.9.0_vc2013\include /IC:\Users\Marie\Documents\GitHub\KeyframeProject\KeyframeProject\vc2013 /ZI /nologo /W3 /WX- /MP /Od /Oy- /D WIN32 /D _WIN32_WINNT=0x0601 /D _WINDOWS /D NOMINMAX /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\src\KeyframeProjectApp.cpp KeyframeChannel.cpp
+     1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
+         KeyframeChannel.cpp
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\keyframechannel.cpp(24): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\keyframechannel.cpp(180): warning C4018: '<' : signed/unsigned mismatch
+         KeyframeProjectApp.cpp
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skeleton.h(69): warning C4018: '<' : signed/unsigned mismatch
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Marie\Documents\GitHub\KeyframeProject\KeyframeProject\vc2013\Debug\KeyframeProject.exe" /INCREMENTAL /NOLOGO /LIBPATH:..\..\..\..\..\..\..\MyPrograms\cinder_0.9.0_vc2013\cinder_0.9.0_vc2013\lib\msw\x86 "cinder-v120_d.lib" OpenGL32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Marie\Documents\GitHub\KeyframeProject\KeyframeProject\vc2013\Debug\KeyframeProject.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE:NO /IMPLIB:"C:\Users\Marie\Documents\GitHub\KeyframeProject\KeyframeProject\vc2013\Debug\KeyframeProject.lib" /MACHINE:X86 Debug\Resources.res
+         Debug\KeyframeProjectApp.obj
+         Debug\Animation.obj
+         Debug\KeyframeChannel.obj
+         Debug\Skeleton.obj
+         Debug\Skin.obj
+         KeyframeProject.vcxproj -> C:\Users\Marie\Documents\GitHub\KeyframeProject\KeyframeProject\vc2013\Debug\KeyframeProject.exe
+     1>Done Building Project "C:\Users\Marie\Documents\GitHub\KeyframeProject\KeyframeProject\vc2013\KeyframeProject.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:51.63
