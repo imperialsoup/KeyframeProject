@@ -43,8 +43,9 @@ public:
 	void computeTangentIn(int i);
 	void computeTangentOut(int i);
 	float InvLerpTime(float t, int i);
+	float MapTime(float t);
 	float Evaluate(float time);
-	float extrapolate(int flag);
+	float extrapolate(int flag, float time);
 	std::vector<int> findSpan(float time);
 
 	ci::mat4 hermiteBasis;
@@ -52,8 +53,9 @@ public:
 
 class full_channel{
 public:
+	full_channel();
 	full_channel(KeyframeChannel channelx, KeyframeChannel channely, KeyframeChannel channelz);
-
+	std::vector<KeyframeChannel> channels;
 };
 
 /*TODO: 
@@ -65,7 +67,7 @@ class Animation{
 public:
 	Animation();
 	void init(const std::string& filename);
-	std::vector<KeyframeChannel> channels;
+	//std::vector<KeyframeChannel> channels;
 	std::vector<full_channel> full_channels;
 	ExtrapolationMode Animation::getMode(std::string mode);
 

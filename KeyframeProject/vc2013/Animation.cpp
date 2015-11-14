@@ -45,38 +45,43 @@ void Animation::init(const std::string& filename){
 			Keyframe keyframe;
 			KeyframeChannel ch = KeyframeChannel();
 			Keyframe newKeyframe = Keyframe();
-			//read in each channel
-			for (int i = 0; i < numchannels; i++){
-				int numkeys = 0;
+			//read in each full channel
+			for (int i = 0; i < numchannels / 3; i++){
+				full_channel fchannel = full_channel();
+				//read in 3 channels 
+				for (int j = 0; j < 3; j++){ //3 --> # of DOFs we are working with atm
+					int numkeys = 0;
 
-				file >> input; file >> trash;	//channel {
-				file >> input; file >> modein; file >> modeout;	//extrapolate mode1 mode2
+					file >> input; file >> trash;	//channel {
+					file >> input; file >> modein; file >> modeout;	//extrapolate mode1 mode2
+					ch.minmode = getMode(modein);
+					ch.maxmode = getMode(modeout);
+					ch.hermiteBasis = mat4(2, -2, 1, 1,
+						-3, 3, -2, -1,
+						0, 0, 1, 0,
+						1, 0, 0, 0);
 
-				ch.minmode = getMode(modein);
-				ch.maxmode = getMode(modeout);
-				ch.hermiteBasis = mat4(2, -2, 1, 1,
-					-3, 3, -2, -1,
-					0, 0, 1, 0,
-					1, 0, 0, 0);
+					file >> input; file >> numkeys; file >> trash;	//keys # {
+					//make keys for new channel
+					for (int i = 0; i < numkeys; i++){
+						string tangentin, tangentout;
 
-				file >> input; file >> numkeys; file >> trash;	//keys # {
-				//make keys for new channel
-				for (int i = 0; i < numkeys; i++){
-					string tangentin, tangentout;
+						file >> newKeyframe.Time; file >> newKeyframe.Value;
+						file >> tangentin; file >> tangentout;//only takes 1 char
 
-					file >> newKeyframe.Time; file >> newKeyframe.Value;
-					file >> tangentin; file >> tangentout;//only takes 1 char
+						//TODO: Fix so that a value tangent type reads in a float value for the tangent
+						newKeyframe.RuleIn = getType(tangentin);
+						newKeyframe.RuleOut = getType(tangentout);
 
-					//TODO: Fix so that a value tangent type reads in a float value for the tangent
-					newKeyframe.RuleIn = getType(tangentin);
-					newKeyframe.RuleOut = getType(tangentout);
-
-					//add the key to new channel
-					ch.keyframes.push_back(newKeyframe);
+						//add the key to new channel
+						ch.keyframes.push_back(newKeyframe);
+					}
+					file >> trash; file >> trash;	//}end keyframe } end channel
+					fchannel.channels.push_back(ch);	//have full channel push back new channel
+					ch.keyframes.clear();
 				}
-				file >> trash; file >> trash;	//end channel file io
-				channels.push_back(ch);	//have animation push back new channel
-				ch.keyframes.clear();
+				full_channels.push_back(fchannel);
+				fchannel.channels.clear();
 			}
 		}
 	}

@@ -14,6 +14,8 @@ using namespace std;
 
 Keyframe::Keyframe(){}
 
+full_channel::full_channel(){}
+
 KeyframeChannel::KeyframeChannel(){
 
 }
@@ -101,9 +103,9 @@ float KeyframeChannel::Evaluate(float time){
 	switch (span_status[0]){
 					//t falls before first or after last key : extrapolate
 		case -1 :	if (span_status[1] == 0)	
-						value = extrapolate(0);
+						value = extrapolate(0, time);
 					else	
-						value = extrapolate(1);
+						value = extrapolate(1, time);
 					break;
 		case 0 :	//t falls exactly on some key : return key value
 					value = keyframes[span_status[1]].Value;
@@ -128,9 +130,12 @@ float KeyframeChannel::InvLerpTime(float t, int i){
 	return u;
 }
 
+/*interpolates a time t to be between the min and max time range of the animation */
+//TODO: implement a function to interpolate where time t is respectively before or after the first and last keyframe times
+
 /*extrapolate(): returns a value based on extrapolation rules*/
 //TODO: finish extrapolation evaluations
-float KeyframeChannel::extrapolate(int flag){
+float KeyframeChannel::extrapolate(int flag, float time){
 	ExtrapolationMode mode;
 	Keyframe frame;
 	float value;
@@ -150,6 +155,8 @@ float KeyframeChannel::extrapolate(int flag){
 		case linear:	value = frame.TangentIn; //TODO: replace with evaluation function
 						break;
 		case cyclic:	//repeat channel
+						//map time t to be within the animation range
+						//evaluate the 
 						break;
 		case cyclic_offset:	//repeat with value offset
 						break;

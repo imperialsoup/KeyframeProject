@@ -27,17 +27,10 @@ public:
 		glm::mat4x4 rotyMatrix = glm::rotate(pose.y, ci::vec3(0, 1.0, 0));
 		glm::mat4x4 rotzMatrix = glm::rotate(pose.z, ci::vec3(0, 0, 1.0));
 		local = transMatrix *  rotzMatrix * rotyMatrix * rotxMatrix;
-		//return local;
 	}
 
 	inline void computeWorld(){
-		cinder::app::console() << "world : " << world << std::endl;
-		cinder::app::console() << "parent world : " << (*parent).world << std::endl;
-		cinder::app::console() << "local : " << local << std::endl;
 		world = (*parent).world * local;
-		cinder::app::console() << "new world : " << world << std::endl;
-		//world = local;
-		//return world;
 	}
 
 	inline void update(){
