@@ -1,10 +1,10 @@
-﻿Build started 11/13/2015 8:59:39 PM.
+﻿Build started 11/15/2015 1:35:24 PM.
      1>Project "C:\Users\Marie\Documents\GitHub\KeyframeProject\KeyframeProject\vc2013\KeyframeProject.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\include /I..\..\..\..\..\..\..\MyPrograms\cinder_0.9.0_vc2013\cinder_0.9.0_vc2013\include /IC:\Users\Marie\Documents\GitHub\KeyframeProject\KeyframeProject\vc2013 /ZI /nologo /W3 /WX- /MP /Od /Oy- /D WIN32 /D _WIN32_WINNT=0x0601 /D _WINDOWS /D NOMINMAX /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\src\KeyframeProjectApp.cpp Animation.cpp KeyframeChannel.cpp Skeleton.cpp Skin.cpp
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
          Skin.cpp
-     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skeleton.h(69): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skeleton.h(60): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skin.cpp(71): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skin.cpp(80): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skin.cpp(196): warning C4018: '<' : signed/unsigned mismatch
@@ -14,15 +14,22 @@
      1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skin.cpp(212): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skin.cpp(221): warning C4018: '<' : signed/unsigned mismatch
          Skeleton.cpp
-     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skeleton.h(69): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skeleton.h(60): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skeleton.cpp(54): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skeleton.cpp(191): warning C4018: '<' : signed/unsigned mismatch
          KeyframeChannel.cpp
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\animation.h(66): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\keyframechannel.cpp(26): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\keyframechannel.cpp(182): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\keyframechannel.cpp(247): warning C4018: '<' : signed/unsigned mismatch
          Animation.cpp
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skeleton.h(60): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\animation.h(66): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\animation.cpp(25): warning C4800: 'cinder::Timer *' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\animation.cpp(92): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\animation.cpp(106): warning C4018: '<' : signed/unsigned mismatch
          KeyframeProjectApp.cpp
-     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skeleton.h(69): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skeleton.h(60): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\animation.h(66): warning C4018: '<' : signed/unsigned mismatch
          Generating Code...
      1>c:\users\marie\documents\github\keyframeproject\keyframeproject\vc2013\skeleton.cpp(126): warning C4715: 'Skeleton::createJoint' : not all control paths return a value
        ResourceCompile:
@@ -39,4 +46,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:01:12.76
+Time Elapsed 00:01:40.72

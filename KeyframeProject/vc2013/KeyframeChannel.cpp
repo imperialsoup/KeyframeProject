@@ -23,21 +23,33 @@ KeyframeChannel::KeyframeChannel(){
 /*loops through keyframes to precompute TangentIn, TangentOut, Cubic Coefficients, and spanScale for each keyframe in the channel*/
 void KeyframeChannel::Precompute(){
 	//compute in/out tangent values for each keyframe
-	for (int i = 0; i < keyframes.size() - 1; i++){
+	for (int i = 0; i < keyframes.size(); i++){
 		computeTangentIn(i);
 		computeTangentOut(i);
 		computeCubicCoefficients(i);
-		//precompute spanScale
-		keyframes[i].spanScale = 1 / (keyframes[i + 1].Time - keyframes[i].Time);
+		if (keyframes.size() - 1 == 0 || i == keyframes.size() -1)
+			keyframes[i].spanScale = 0;
+		else 
+			keyframes[i].spanScale = 1 / (keyframes[i + 1].Time - keyframes[i].Time);
 	}
 }
 
 /*compute and sets cubic coefficients A, B, C, D, for keyframe[i]*/
 void KeyframeChannel::computeCubicCoefficients(int i){
 	//t1 - t0
-	float scale = keyframes[i + 1].Time - keyframes[i].Time; 
+	float scale;
+	vec4 span;
+	//if there's only one keyframe in the channel or it's the last keyframe..
+	if (keyframes.size() - 1 == 0 || i == keyframes.size() - 1){
+		scale = 1;
+		span = vec4(keyframes[i].Value, keyframes[i].Value, scale * keyframes[i].TangentOut, scale * keyframes[i].TangentIn);
+	}
+	else {
+		scale = keyframes[i + 1].Time - keyframes[i].Time;
+		span = vec4(keyframes[i].Value, keyframes[i + 1].Value, scale * keyframes[i].TangentOut, scale * keyframes[i + 1].TangentIn);
+	}
 	//[p0, p1, v0, v1]  --> [p0, p1, (t1-t0)v0, (t1-t0)v1)]
-	vec4 span = vec4(keyframes[i].Value, keyframes[i + 1].Value, scale * keyframes[i].TangentOut, scale * keyframes[i + 1].TangentIn);	
+
 	//[a, b, c, d] = [p0, p1, v0, v1] * inv(hermiteBasis)
 	vec4 abcd = span * hermiteBasis;		
 	//store the coefficients in the first keyframe of the span
@@ -52,14 +64,19 @@ void KeyframeChannel::computeCubicCoefficients(int i){
 void KeyframeChannel::computeTangentIn(int i){
 	switch (keyframes[i].RuleIn){
 	case flat:	keyframes[i].TangentIn = 0;
-		break;
+				break;
 
-	case Linear:keyframes[i].TangentIn = ((keyframes[i].Value - keyframes[i - 1].Value) / (keyframes[i].Time - keyframes[i - 1].Time));
-		break;
+	case Linear: if (i == 0)
+					keyframes[i].TangentIn = 0;	//wait till tangout out computation to set
+				 else 
+					keyframes[i].TangentIn = ((keyframes[i].Value - keyframes[i - 1].Value) / (keyframes[i].Time - keyframes[i - 1].Time));
+				break;
 
-	case smooth:if (i == 0 || i == keyframes.size() - 1){//TODO: find a way to redirect this neatly to Linear case for first/last keyframe
-		keyframes[i].TangentIn = ((keyframes[i].Value - keyframes[i - 1].Value) / (keyframes[i].Time - keyframes[i - 1].Time));
-	}
+	case smooth:if (i == 0)	//wait until tangentout computation to set 
+					keyframes[i].TangentIn = 0;
+				else if (i == keyframes.size() - 1){	//if last (and not same as 1st, as in only one key in channel), use linear rule
+					keyframes[i].TangentIn = ((keyframes[i].Value - keyframes[i - 1].Value) / (keyframes[i].Time - keyframes[i - 1].Time));
+				}
 				else {
 					keyframes[i].TangentIn = ((keyframes[i + 1].Value - keyframes[i - 1].Value) / (keyframes[i + 1].Time - keyframes[i - 1].Time));
 				}
@@ -75,23 +92,29 @@ void KeyframeChannel::computeTangentOut(int i){
 
 	switch (keyframes[i].RuleOut){
 	case flat:	keyframes[i].TangentOut = 0;
-		break;
-	case Linear:keyframes[i].TangentOut = ((keyframes[i].Value - keyframes[i + 1].Value) / (keyframes[i].Time - keyframes[i + 1].Time));
-		break;
+				break;
+	case Linear:	if (i == keyframes.size() - 1)	//set last keyframe out tangent = in tangent
+						keyframes[i].TangentOut = keyframes[i].TangentIn;
+					else 
+						keyframes[i].TangentOut = ((keyframes[i].Value - keyframes[i + 1].Value) / (keyframes[i].Time - keyframes[i + 1].Time));
+					if (i == 0)
+						keyframes[i].TangentIn = keyframes[i].TangentOut;
+					break;
 	case smooth:
-		if (i == 0 || i == keyframes.size() - 1){//if first or last, use the linear rule (TODO: find a way to redirect this neatly to Linear case 
+		if (i == 0 && (keyframes.size()-1 != 0)){
 			keyframes[i].TangentOut = ((keyframes[i].Value - keyframes[i + 1].Value) / (keyframes[i].Time - keyframes[i + 1].Time));
+			keyframes[i].TangentIn = keyframes[i].TangentOut;
 		}
-		else {
+		else 
 			keyframes[i].TangentOut = keyframes[i].TangentIn; //TangentIn should already be computed
-		}
+		
 		break;
-	case value: keyframes[i].TangentOut = keyframes[i].Value;
+	case value: keyframes[i].TangentOut = keyframes[i].Value; //?
 		keyframes[i].A = keyframes[i].B = keyframes[i].C = keyframes[i].D = 0;
 		break;
 	}
-
 }
+
 
 /*returns the value of the channel for a given time*/
 float KeyframeChannel::Evaluate(float time){
@@ -99,7 +122,7 @@ float KeyframeChannel::Evaluate(float time){
 
 	//find the span 
 	vector<int> span_status = findSpan(time);
-
+	console() << "Span_status : " << span_status[0] << " " << span_status[1] << endl;
 	switch (span_status[0]){
 					//t falls before first or after last key : extrapolate
 		case -1 :	if (span_status[1] == 0)	
@@ -130,8 +153,33 @@ float KeyframeChannel::InvLerpTime(float t, int i){
 	return u;
 }
 
-/*interpolates a time t to be between the min and max time range of the animation */
-//TODO: implement a function to interpolate where time t is respectively before or after the first and last keyframe times
+/*computes and returns a time t mapped to be between the channel's min and max time*/
+float KeyframeChannel::MapTime(float time, bool bounceflag){
+	/*maps a time x b/w time frame AB, to time y b/w time CD*/
+	float A, B, C, D, distance;
+	C = keyframes[0].Time; //min time
+	D = keyframes[keyframes.size() - 1].Time;	//max time
+
+	//first find the range AB that time falls in 
+	int rangetype = 0;	//to keep track for bounce 
+	A = C; B = D; 
+	distance = D - C;
+	bool rangeFound = false;
+	while (!rangeFound){
+		A += distance;
+		B += distance;
+		if (A <= time && time <= B)
+			rangeFound = true;
+		rangetype++;
+	}
+
+	//map the time to the min/max range of the channel
+	float y = (time - A) / (B - A) * distance + C;
+	if (bounceflag && (rangetype % 2 != 0))	//if rangetype is not even, the time should be reversed
+		return D - y;
+	else
+		return y;
+}
 
 /*extrapolate(): returns a value based on extrapolation rules*/
 //TODO: finish extrapolation evaluations
@@ -149,18 +197,30 @@ float KeyframeChannel::extrapolate(int flag, float time){
 		frame = keyframes[keyframes.size() - 1];
 		}
 
+	float mapTime;
+
 	switch (mode){
 		case constant:	value = frame.Value;
 						break;
-		case linear:	value = frame.TangentIn; //TODO: replace with evaluation function
+		case linear:	//distance = velocity * time
+						if (flag == 0)	
+							value = frame.TangentIn * time;
+						else if (flag == 1)
+							value = frame.TangentOut * time;
 						break;
-		case cyclic:	//repeat channel
-						//map time t to be within the animation range
-						//evaluate the 
+		case cyclic:	//repeat channel (eval like normal)
+						mapTime = MapTime(time, false);
+						value = Evaluate(mapTime);
 						break;
 		case cyclic_offset:	//repeat with value offset
+						mapTime = MapTime(time, false);
+						if (flag == 0)
+							value = Evaluate(mapTime) - keyframes[0].Value;
+						else if (flag == 1)
+							value = Evaluate(mapTime) + keyframes[keyframes.size() - 1].Value;
 						break;
 		case bounce :	//repeat alternating backwards forwards
+						
 						break;
 	}
 
@@ -183,7 +243,7 @@ vector<int> KeyframeChannel::findSpan(float time){
 	vector<int> status;
 
 	//if in between 1st & last frame
-	if (time > keyframes[0].Time && time < keyframes[keyframes.size() - 1].Time){
+	if (keyframes[0].Time <= time  && time <= keyframes[keyframes.size() - 1].Time){
 		for (int i = 0; i < keyframes.size() - 1; i++){
 			// 1) time falls exactly on a keyframe
 			if (time == keyframes[i].Time){
@@ -191,7 +251,7 @@ vector<int> KeyframeChannel::findSpan(float time){
 				break;
 			}
 			// 2) time falls between this keyframe and the next
-			if (time < keyframes[i].Time && time < keyframes[i + 1].Time){
+			if (time > keyframes[i].Time && time < keyframes[i + 1].Time){
 				status.push_back(1); status.push_back(i);
 				break;
 			}

@@ -51,8 +51,6 @@ public:
 	float clamp(float input, float min, float max);
 	void drawJoint(Joint * joint);
 	void depthSearch(Joint * node);
-	void doThing();
-
 	std::vector<Joint * > joints;
 	Joint root;
 	Joint world_joint;

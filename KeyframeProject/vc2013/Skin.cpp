@@ -162,8 +162,8 @@ void Skin::initBindings(int numBindings){
 
 		mat4x4 invBinding = inverse(binding);
 
-		console() << "binding" << i << " : " << binding << endl;
-		console() << "inverse binding" << i << " : " << invBinding << endl;
+	//	console() << "binding" << i << " : " << binding << endl;
+		//console() << "inverse binding" << i << " : " << invBinding << endl;
 		bindings.push_back(invBinding);
 	}
 	console() << "initBindings : Done!" << endl;
@@ -203,7 +203,7 @@ void Skin::draw(){
 		vertex(skinvertexes[triangles[i].z].trans_position.x, skinvertexes[triangles[i].z].trans_position.y, skinvertexes[triangles[i].z].trans_position.z);
 	}
 	end();
-	console() << "Skin::draW() : done " << endl;
+//	console() << "Skin::draW() : done " << endl;
 	popMatrices();
 }
 

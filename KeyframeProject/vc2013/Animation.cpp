@@ -1,16 +1,18 @@
 #include "cinder/app/AppBase.h"
 #include "cinder/cinder.h"
 #include "cinder/Function.h"
-#include "cinder/gl/gl.h"
-#include <stdio.h>
-#include "Animation.h"
+
+#include "Skeleton.h"
 #include <fstream>
-#include "cinder/Json.h"
+#include "Animation.h"
+#include "cinder/gl/gl.h"
+
 
 using namespace ci;
 using namespace ci::app;
-using namespace gl;
 using namespace std;
+using namespace gl;
+
 
 
 
@@ -18,8 +20,9 @@ Animation::Animation(){
 }
 
 /*loads and initalizes channels and keyframes from an .anim file*/
-void Animation::init(const std::string& filename){
-
+void Animation::init(const std::string& filename, Skeleton * skeletonptr){
+	skeleton = skeletonptr;
+	timer = new Timer();
 	ifstream file;
 	console() << "Initializing Animation..." << std::endl;
 	file.open(filename);
@@ -85,7 +88,29 @@ void Animation::init(const std::string& filename){
 			}
 		}
 	}
+	/*precompute!!*/
+	for (int i = 0; i < full_channels.size(); i++){
+		full_channels[i].Precompute();
+	}
 	console() << "Animation.init() : Finished initializing animation. " << std::endl;
+}
+
+void Animation::animate(){
+
+	if (start){
+		float time = (float)timer.getSeconds();
+		console() << timer.getSeconds() << endl;
+		//translate root
+		(*(*skeleton).joints[0]).offset = full_channels[0].Evaluate(time);
+		int j = 1;
+		for (int i = 0; i < (*skeleton).joints.size(); i++){
+			(*(*skeleton).joints[i]).pose = full_channels[j].Evaluate(time);
+			j++;
+		}
+	}
+
+		//set the corresponding joint's xyz values to the value
+	//}
 }
 
 /*returns the TangentType associated with the given string*/
@@ -117,3 +142,4 @@ ExtrapolationMode Animation::getMode(string mode){
 		exmode = bounce;
 	return exmode;
 }
+

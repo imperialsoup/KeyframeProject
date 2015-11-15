@@ -7,6 +7,7 @@
 #include "Animation.h"
 #include "cinder/Camera.h"
 #include "cinder/params/Params.h"
+#include "cinder/Timeline.h"
 
 using namespace ci;
 using namespace gl;
@@ -21,6 +22,8 @@ public:
 	void update();
 	void draw();
 	void drawAxis();
+	void startbutton();
+	//void resetbutton();
 
 	Animation animation;
 	Skeleton skeleton;
@@ -53,31 +56,41 @@ void KeyframeProjectApp::setup()
 	mParams = params::InterfaceGl::create(getWindow(), "Cam Params", toPixels(vec2(200, 200)));
 	mParams->addParam("Scene Rotation", &camRotation, "opened=1");
 	mParams->addParam("Zoom", &camDistance, "min=1.0");
+	mParams->addButton("Start", std::bind(&KeyframeProjectApp::startbutton, this));
+	//mParams->addButton("Reset", std::bind(&KeyframeProjectApp::startbutton, this));
+
 
 	//setup skeleton
-	skeleton.init("C:/Users/Marie/Documents/Fall_2015/CS_4392_Animation/assignments/HW3/tube.skel");
+	skeleton.init("C:/Users/Marie/Documents/Fall_2015/CS_4392_Animation/assignments/HW4/wasp_walk.skel");
 
 	//setup skin
-	skin.init("C:/Users/Marie/Documents/Fall_2015/CS_4392_Animation/assignments/HW3/tube.skin", &skeleton);
+	skin.init("C:/Users/Marie/Documents/Fall_2015/CS_4392_Animation/assignments/HW4/wasp_walk.skin", &skeleton);
 
 	//setup animation 
-	animation.init("C:/Users/Marie/Documents/Fall_2015/CS_4392_Animation/assignments/HW4/wasp_walk.anim");
+	animation.init("C:/Users/Marie/Documents/Fall_2015/CS_4392_Animation/assignments/HW4/wasp_walk.anim", &skeleton);
 
 	skeleton.depthSearch(&skeleton.root);
-	//skeleton.doThing();
+
 	console() << "Finished setting up!" << endl;
 }
 
-void KeyframeProjectApp::mouseDown(MouseEvent event)
+
+void KeyframeProjectApp::startbutton()
 {
+	console() << "start button pressed" << endl;
+	animation.start = true;
+	animation.timer.start();
 }
 
+void KeyframeProjectApp::mouseDown(MouseEvent e){}
 void KeyframeProjectApp::update(){
 	mEye = vec3(0.0f, 0.0f, camDistance);
 	mCam.lookAt(mEye, vec3(0.0));
+
+	animation.animate();
 	skeleton.update();
 	skin.update();
-	console() << ci::app::getElapsedSeconds() * 1000;
+	
 	}
 
 void KeyframeProjectApp::drawAxis()

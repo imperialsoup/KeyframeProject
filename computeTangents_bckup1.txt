@@ -1,0 +1,71 @@
+/*loops through keyframes to precompute TangentIn, TangentOut, Cubic Coefficients, and spanScale for each keyframe in the channel*/
+void KeyframeChannel::Precompute(){
+	//compute in/out tangent values for each keyframe
+	for (int i = 0; i < keyframes.size(); i++){
+		computeTangentIn(i);
+		computeTangentOut(i);
+		computeCubicCoefficients(i);
+		keyframes[i].spanScale = 1 / (keyframes[i + 1].Time - keyframes[i].Time);
+	}
+}
+
+/*compute and sets cubic coefficients A, B, C, D, for keyframe[i]*/
+void KeyframeChannel::computeCubicCoefficients(int i){
+	//t1 - t0
+	float scale = keyframes[i + 1].Time - keyframes[i].Time; 
+	//[p0, p1, v0, v1]  --> [p0, p1, (t1-t0)v0, (t1-t0)v1)]
+	vec4 span = vec4(keyframes[i].Value, keyframes[i + 1].Value, scale * keyframes[i].TangentOut, scale * keyframes[i + 1].TangentIn);	
+	//[a, b, c, d] = [p0, p1, v0, v1] * inv(hermiteBasis)
+	vec4 abcd = span * hermiteBasis;		
+	//store the coefficients in the first keyframe of the span
+	keyframes[i].A = abcd[0];
+	keyframes[i].B = abcd[1];
+	keyframes[i].C = abcd[2];
+	keyframes[i].D = abcd[3];
+}
+
+/*computes and sets the tangentIn for keyframe[i]*/
+//TODO: Find a way to combine computeTangentIn/computeTangentOut, and fix case: value
+void KeyframeChannel::computeTangentIn(int i){
+	switch (keyframes[i].RuleIn){
+	case flat:	keyframes[i].TangentIn = 0;
+		break;
+
+	case Linear:keyframes[i].TangentIn = ((keyframes[i].Value - keyframes[i - 1].Value) / (keyframes[i].Time - keyframes[i - 1].Time));
+		break;
+
+	case smooth:if (i == 0 || i == keyframes.size() - 1){//TODO: find a way to redirect this neatly to Linear case for first/last keyframe
+		keyframes[i].TangentIn = ((keyframes[i].Value - keyframes[i - 1].Value) / (keyframes[i].Time - keyframes[i - 1].Time));
+	}
+				else {
+					keyframes[i].TangentIn = ((keyframes[i + 1].Value - keyframes[i - 1].Value) / (keyframes[i + 1].Time - keyframes[i - 1].Time));
+				}
+				break;
+	case value: //can only be specified on outgoing tangents..hmm...
+		//tangent will be a direct change from the previous value to this one...
+		break;
+	}
+}
+
+/*computes and sets the tangentOut for keyframe[i]*/
+void KeyframeChannel::computeTangentOut(int i){
+
+	switch (keyframes[i].RuleOut){
+	case flat:	keyframes[i].TangentOut = 0;
+		break;
+	case Linear:keyframes[i].TangentOut = ((keyframes[i].Value - keyframes[i + 1].Value) / (keyframes[i].Time - keyframes[i + 1].Time));
+		break;
+	case smooth:
+		if (i == 0 || i == keyframes.size() - 1){//if first or last, use the linear rule (TODO: find a way to redirect this neatly to Linear case 
+			keyframes[i].TangentOut = ((keyframes[i].Value - keyframes[i + 1].Value) / (keyframes[i].Time - keyframes[i + 1].Time));
+		}
+		else {
+			keyframes[i].TangentOut = keyframes[i].TangentIn; //TangentIn should already be computed
+		}
+		break;
+	case value: keyframes[i].TangentOut = keyframes[i].Value;
+		keyframes[i].A = keyframes[i].B = keyframes[i].C = keyframes[i].D = 0;
+		break;
+	}
+
+}

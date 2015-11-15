@@ -135,7 +135,7 @@ void Skeleton::drawJoint(Joint * joint){
 	pushModelMatrix();
 
 
-	console() << "Drawing " + (*joint).name + "..." << endl;
+	//console() << "Drawing " + (*joint).name + "..." << endl;
 
 	float x = clamp((*joint).pose.x, (*joint).rotxlimit.x, (*joint).rotxlimit.y);
 	float y = clamp((*joint).pose.y, (*joint).rotylimit.x, (*joint).rotylimit.y);
@@ -183,7 +183,7 @@ void Skeleton::drawJoint(Joint * joint){
 	vertex((*joint).boxmax.x, (*joint).boxmin.y, (*joint).boxmin.z);	// B
 	vertex((*joint).boxmax.x, (*joint).boxmin.y, (*joint).boxmax.z);	// D
 
-	console() << "Finished drawing " + (*joint).name + "." << endl;
+	//console() << "Finished drawing " + (*joint).name + "." << endl;
 	end();
 
 
@@ -207,9 +207,7 @@ float Skeleton::clamp(float input, float min, float max){
 	return result;
 }
 
-void Skeleton::doThing(){
-	console() << "doing thing" << endl;
-}
+
 
 /*need some way to do depth first traversal of joints*/
 void Skeleton::depthSearch(Joint * node){

@@ -1,5 +1,7 @@
-#pragma once
+class Skeleton;
 
+#ifndef KeyframeProject_Animation_h
+#define KeyframeProject_Animation_h
 
 enum ExtrapolationMode{
 	constant,
@@ -43,7 +45,7 @@ public:
 	void computeTangentIn(int i);
 	void computeTangentOut(int i);
 	float InvLerpTime(float t, int i);
-	float MapTime(float t);
+	float MapTime(float t, bool bounceflag);
 	float Evaluate(float time);
 	float extrapolate(int flag, float time);
 	std::vector<int> findSpan(float time);
@@ -56,23 +58,40 @@ public:
 	full_channel();
 	full_channel(KeyframeChannel channelx, KeyframeChannel channely, KeyframeChannel channelz);
 	std::vector<KeyframeChannel> channels;
+
+	inline void Precompute(){
+		/*for each(KeyframeChannel channel in channels){
+			channel.Precompute();
+		}*/
+		for (int j = 0; j < channels.size(); j++){
+			channels[j].Precompute();
+		}
+	}
+
+	inline ci::vec3 Evaluate(float time){
+		ci::vec3 value;
+		value.x = channels[0].Evaluate(time);
+		value.y = channels[1].Evaluate(time);
+		value.z = channels[2].Evaluate(time);
+		return value;
+	}
 };
 
-/*TODO: 
-	-implement actual animation functions
-	-?patch up init function to load channels into full_channels 
-		-full_channels hold the x, y, z channel for each respective joint
-	*/
 class Animation{
 public:
 	Animation();
-	void init(const std::string& filename);
-	//std::vector<KeyframeChannel> channels;
+	ci::Timer timer;
+	bool start = false;
+	void init(const std::string& filename, Skeleton * skeletonptr);
+	Skeleton * skeleton;	//the skeleton this anim is associated with
+	void animate();
 	std::vector<full_channel> full_channels;
-	ExtrapolationMode Animation::getMode(std::string mode);
+	ExtrapolationMode getMode(std::string mode);
 
 	TangentType getType(std::string type);
 	ci::vec2 range;
 	std::ifstream file;
 	//~Animation();
 };
+
+#endif
